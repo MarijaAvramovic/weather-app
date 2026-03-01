@@ -47,7 +47,7 @@ async function dohvatiVreme(grad) {
  function sacuvajPodatke(podaci) {
 
   return {
-    city: podaci.address,
+    city: podaci.address.toUpperCase(),
     temperature: podaci.currentConditions.temp,
     humidity: podaci.currentConditions.humidity,
     windSpeed: podaci.currentConditions.windspeed,
@@ -108,7 +108,9 @@ async function addGiphyIcons(gif) {
   const url = `https://api.giphy.com/v1/gifs/translate?api_key=${API_KEY}&s=${gif}`
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+    mode: 'cors'   
+  });
 
     if (!response.ok) {
       throw new Error("Greška pri fetch zahtevu");
