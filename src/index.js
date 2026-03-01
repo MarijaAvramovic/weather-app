@@ -15,11 +15,33 @@ async function dohvatiVreme() {
       throw new Error("Grad nije pronađen");
     }
     const podaci = await odgovor.json();
-    console.log(podaci)
+   console.log(podaci);
+   const prognoza = sacuvajPodatke(podaci);
+
+   console.log(prognoza.city);
+   prikaziPodatke(podaci);
+   
 
   } catch (greska) {
     console.log(greska.message) 
      
   } 
 }
-dohvatiVreme();
+ dohvatiVreme() 
+
+ function sacuvajPodatke(podaci) {
+
+  return {
+    city: podaci.address,
+    temperature: podaci.currentConditions.temp,
+    humidity: podaci.currentConditions.humidity,
+    windSpeed: podaci.currentConditions.windspeed,
+    description: podaci.description
+  };
+}
+ 
+
+ function prikaziPodatke(podaci) {
+   
+
+ }
