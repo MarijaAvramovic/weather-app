@@ -2,12 +2,15 @@ import "./styles.css";
 
 const API_KLJUC = "68Z86M7ZXLK98UL8VC3ZEWNRJ";
 
+const pretraziBtn = document.getElementById("pretrazi-btn");
+const gradInput = document.getElementById("grad-input");
+
 let trenutniPodaci = null;
 
-async function dohvatiVreme() {
+async function dohvatiVreme(grad) {
   try {
  
-    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/london?key=${API_KLJUC}`;
+    const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${grad}?key=${API_KLJUC}`;
 
     const odgovor = await fetch(url);
 
@@ -18,8 +21,8 @@ async function dohvatiVreme() {
    console.log(podaci);
    const prognoza = sacuvajPodatke(podaci);
 
-   console.log(prognoza.city);
-   prikaziPodatke(podaci);
+   console.log(prognoza.city, prognoza.temperature);
+ 
    
 
   } catch (greska) {
@@ -27,7 +30,7 @@ async function dohvatiVreme() {
      
   } 
 }
- dohvatiVreme() 
+
 
  function sacuvajPodatke(podaci) {
 
@@ -45,3 +48,15 @@ async function dohvatiVreme() {
    
 
  }
+
+ pretraziBtn.addEventListener("click", () => {
+  const grad = gradInput.value.trim();
+  if (grad) dohvatiVreme(grad);
+});
+
+gradInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    const grad = gradInput.value.trim();
+    if (grad) dohvatiVreme(grad);
+  }
+});
