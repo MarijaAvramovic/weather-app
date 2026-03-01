@@ -10,10 +10,10 @@ const loadingDiv = document.getElementById("loading");
 const toggleBtn = document.getElementById("toggle-jedinica");
 
 let trenutniPodaci = null;
+let jeCelzijus = false;
 
 async function dohvatiVreme(grad) {
   try {
- 
     loadingDiv.classList.remove("hidden");
     greskaDiv.classList.add("hidden");
     rezultatDiv.classList.add("hidden");
@@ -26,17 +26,21 @@ async function dohvatiVreme(grad) {
       throw new Error("Grad nije pronađen");
     }
     const podaci = await odgovor.json();
-   console.log(podaci);
+ 
+//    console.log(podaci);
    const prognoza = sacuvajPodatke(podaci);
-
+       trenutniPodaci = prognoza;   //toggle
 //    console.log(prognoza.city, prognoza.temperature);
  
-   prikaziPodatke(prognoza)
+   prikaziPodatke(prognoza, jeCelzijus)
 
   } catch (greska) {
     console.log(greska.message) 
      
   } 
+  finally {
+    loadingDiv.classList.add("hidden");
+  }
 }
 
 
@@ -53,19 +57,24 @@ async function dohvatiVreme(grad) {
  
 
  
-   function prikaziPodatke(podaci) {
-  const temp = Math.round(podaci.temperature) 
+   function prikaziPodatke(podaci, celzijus) {
+
+    const temp = celzijus 
+    ?  Math.round((podaci.temperature - 32) / 1.8)
+    : Math.round(podaci.temperature) ;
+ 
  
   document.getElementById("lokacija").textContent = `${podaci.city}`;
  
   document.getElementById("opis").textContent = podaci.description;
-  document.getElementById("temperatura").textContent = `Temperatura: ${temp}°`;
+  document.getElementById("temperatura").textContent =  `Temperatura: ${temp}°${celzijus ? 'C' : 'F'}`;;
 
 
   document.getElementById("vlaznost").textContent = `Vlažnost: ${podaci.humidity}%`;
   document.getElementById("vetar").textContent = `Vetar: ${podaci.windSpeed} m/s`;
 
   rezultatDiv.classList.remove("hidden");
+  toggleBtn.textContent = celzijus ? "Promeni na °F" : "Promeni na °C";
   
 }
 
@@ -80,5 +89,11 @@ gradInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") {
     const grad = gradInput.value.trim();
     if (grad) dohvatiVreme(grad);
+  }
+});
+toggleBtn.addEventListener("click", () => {
+  if (trenutniPodaci) {
+    jeCelzijus = !jeCelzijus;
+    prikaziPodatke(trenutniPodaci, jeCelzijus);
   }
 });
