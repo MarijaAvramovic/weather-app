@@ -27,7 +27,7 @@ async function dohvatiVreme(grad) {
     }
     const podaci = await odgovor.json();
  
-//    console.log(podaci);
+   console.log(podaci);
    const prognoza = sacuvajPodatke(podaci);
        trenutniPodaci = prognoza;   //toggle
 //    console.log(prognoza.city, prognoza.temperature);
@@ -51,7 +51,8 @@ async function dohvatiVreme(grad) {
     temperature: podaci.currentConditions.temp,
     humidity: podaci.currentConditions.humidity,
     windSpeed: podaci.currentConditions.windspeed,
-    description: podaci.description
+    description: podaci.description,
+    conditions:podaci.currentConditions.conditions
   };
 }
  
@@ -68,6 +69,7 @@ async function dohvatiVreme(grad) {
  
   document.getElementById("opis").textContent = podaci.description;
   document.getElementById("temperatura").textContent =  `Temperatura: ${temp}°${celzijus ? 'C' : 'F'}`;;
+   addGiphyIcons(podaci.conditions.split(" ").pop());
 
 
   document.getElementById("vlaznost").textContent = `Vlažnost: ${podaci.humidity}%`;
@@ -77,6 +79,7 @@ async function dohvatiVreme(grad) {
   toggleBtn.textContent = celzijus ? "Promeni na °F" : "Promeni na °C";
   
 }
+
 
  
 
@@ -97,3 +100,25 @@ toggleBtn.addEventListener("click", () => {
     prikaziPodatke(trenutniPodaci, jeCelzijus);
   }
 });
+
+
+const API_KEY = "rNi0yvET0y0zGm4PYKzRKcUWbL5V4Fw5";
+
+async function addGiphyIcons(gif) {
+  const url = `https://api.giphy.com/v1/gifs/translate?api_key=${API_KEY}&s=${gif}`
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Greška pri fetch zahtevu");
+    }
+
+    const data = await response.json();
+
+  document.getElementById("ikona").src = data.data.images.original.url;
+
+  } catch (error) {
+    console.error("Greška:", error);
+  }
+}
