@@ -4,12 +4,20 @@ const API_KLJUC = "68Z86M7ZXLK98UL8VC3ZEWNRJ";
 
 const pretraziBtn = document.getElementById("pretrazi-btn");
 const gradInput = document.getElementById("grad-input");
+const rezultatDiv = document.getElementById("rezultat");
+const greskaDiv = document.getElementById("greska");
+const loadingDiv = document.getElementById("loading");
+const toggleBtn = document.getElementById("toggle-jedinica");
 
 let trenutniPodaci = null;
 
 async function dohvatiVreme(grad) {
   try {
  
+    loadingDiv.classList.remove("hidden");
+    greskaDiv.classList.add("hidden");
+    rezultatDiv.classList.add("hidden");
+
     const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${grad}?key=${API_KLJUC}`;
 
     const odgovor = await fetch(url);
@@ -21,9 +29,9 @@ async function dohvatiVreme(grad) {
    console.log(podaci);
    const prognoza = sacuvajPodatke(podaci);
 
-   console.log(prognoza.city, prognoza.temperature);
+//    console.log(prognoza.city, prognoza.temperature);
  
-   
+   prikaziPodatke(prognoza)
 
   } catch (greska) {
     console.log(greska.message) 
@@ -44,10 +52,24 @@ async function dohvatiVreme(grad) {
 }
  
 
- function prikaziPodatke(podaci) {
-   
+ 
+   function prikaziPodatke(podaci) {
+  const temp = Math.round(podaci.temperature) 
+ 
+  document.getElementById("lokacija").textContent = `${podaci.city}`;
+ 
+  document.getElementById("opis").textContent = podaci.description;
+  document.getElementById("temperatura").textContent = `Temperatura: ${temp}°`;
 
- }
+
+  document.getElementById("vlaznost").textContent = `Vlažnost: ${podaci.humidity}%`;
+  document.getElementById("vetar").textContent = `Vetar: ${podaci.windSpeed} m/s`;
+
+  rezultatDiv.classList.remove("hidden");
+  
+}
+
+ 
 
  pretraziBtn.addEventListener("click", () => {
   const grad = gradInput.value.trim();
